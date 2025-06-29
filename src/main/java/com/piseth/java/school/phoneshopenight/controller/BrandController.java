@@ -80,8 +80,12 @@ public class BrandController {
 		List<Model> brands = modelService.getByBrand(brandId);
 		List<ModelDTO> list = brands.stream()
 			.map(modelMapper::toModelDTO)
-			.toList();
+				.toList();
 		return ResponseEntity.ok(list);
+	}
+
+	public static void main(String[] args) {
+		System.out.println(Runtime.version());
 	}
 	
 	
