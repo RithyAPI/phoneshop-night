@@ -1,61 +1,54 @@
-package com.piseth.java.school.phoneshopenight.controller;
-
-import java.util.Map;
-
-import javax.validation.Valid;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.piseth.java.school.phoneshopenight.dto.PriceDTO;
 import com.piseth.java.school.phoneshopenight.dto.ProductDTO;
 import com.piseth.java.school.phoneshopenight.dto.ProductImportDTO;
 import com.piseth.java.school.phoneshopenight.entity.Product;
 import com.piseth.java.school.phoneshopenight.mapper.ProductMapper;
 import com.piseth.java.school.phoneshopenight.service.ProductService;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-@RequiredArgsConstructor
+import javax.validation.Valid;
+import java.util.Map;
+
+@Tag(name = "Product", description = "Product management APIs")
 @RestController
 @RequestMapping("products")
+@RequiredArgsConstructor
 public class ProductController {
-	
+
 	private final ProductService productService;
 	private final ProductMapper productMapper;
-	
+
+	@Operation(summary = "Create a new product")
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<?> create(@RequestBody ProductDTO productDTO ) {
+	public ResponseEntity<?> create(@RequestBody ProductDTO productDTO) {
 		Product product = productMapper.toProduct(productDTO);
 		product = productService.create(product);
-		
 		return ResponseEntity.ok(product);
 	}
-	
+
+	@Operation(summary = "Import products")
 	@PostMapping("importProduct")
-	public ResponseEntity<?> importProduct(@RequestBody @Valid ProductImportDTO importDTO){
+	public ResponseEntity<?> importProduct(@RequestBody @Valid ProductImportDTO importDTO) {
 		productService.importProduct(importDTO);
 		return ResponseEntity.ok().build();
 	}
-	
+
+	@Operation(summary = "Set sale price for a product")
 	@PostMapping("{productId}/setSalePrice")
-	public ResponseEntity<?> setSalePrice(@PathVariable Long productId, @RequestBody PriceDTO priceDTO){
+	public ResponseEntity<?> setSalePrice(@PathVariable Long productId, @RequestBody PriceDTO priceDTO) {
 		productService.setSalePrice(productId, priceDTO.getPrice());
 		return ResponseEntity.ok().build();
 	}
-	
+
+	@Operation(summary = "Upload products from Excel")
 	@PostMapping("uploadProduct")
-	public ResponseEntity<?> uploadProduct(@RequestParam("file") MultipartFile file){
+	public ResponseEntity<?> uploadProduct(@RequestParam("file") MultipartFile file) {
 		Map<Integer, String> errorMap = productService.uploadProduct(file);
 		return ResponseEntity.ok(errorMap);
 	}
-	
 }
