@@ -39,22 +39,9 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-		http.csrf().disable()
-				.addFilter(new JwtLoginFilter(authenticationManager(authenticationConfiguration)))
-				.addFilterBefore(filterChainExceptionHandler, JwtLoginFilter.class)
-				.addFilterAfter(new TokenVerifyFilter(), JwtLoginFilter.class)
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				.and()
-				.authorizeHttpRequests()
-				.antMatchers(
-						"/",
-						"/swagger-ui/**",       // ✅ Allow all Swagger UI static content
-						"/v3/api-docs/**",      // ✅ Allow OpenAPI docs
-						"/webjars/**",          // ✅ If using Swagger webjars
-						"/css/**", "/js/**"     // ✅ If you have static content
-				).permitAll()
-				.antMatchers(HttpMethod.PUT, "/brands/**").hasAuthority(PermissionEnum.BRAND_WRITE.getDescription())
-				.anyRequest().authenticated();
+		http
+				.csrf().disable()
+				.anonymous().disable();
 
 		return http.build();
 	}
